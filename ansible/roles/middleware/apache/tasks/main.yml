@@ -1,0 +1,49 @@
+---
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - apache2
+    - imagemagick
+  tags:
+    - apache
+
+- name: モジュール有効化
+  command:
+    a2enmod {{ item }}
+  with_items:
+    - rewrite
+    - ssl
+  register:
+    result
+  changed_when:
+    "'already enabled' not in result.stdout"
+  notify:
+    - restart-apache2
+  tags:
+    - apache
+
+- name: PORT解放
+  ufw:
+    rule=allow
+    port={{ item }}
+    proto=tcp
+  with_items:
+    - 443
+  notify:
+    - restart-apache2
+  tags:
+    - apache
+
+- name: サービス登録・起動
+  service:
+    name=apache2
+    state=started
+    enabled=yes
+  notify:
+    - restart-apache2
+  tags:
+    - apache
+
+- include: vhost.yml

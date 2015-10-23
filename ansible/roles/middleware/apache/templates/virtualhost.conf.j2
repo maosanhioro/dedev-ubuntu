@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+    ServerName {{ item.value.domain }}
+    ServerAdmin webmaster@{{ item.value.domain }}
+    DocumentRoot {{ item.value.docroot }}
+    ErrorLog ${APACHE_LOG_DIR}/{{ item.value.domain }}-error_log
+    CustomLog ${APACHE_LOG_DIR}/{{ item.value.domain }}-access_log combined
+    LogLevel warn
+
+    <Directory "{{ item.value.docroot }}">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>

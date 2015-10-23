@@ -1,0 +1,40 @@
+---
+- name: インストール
+  apt:
+    name=phpmyadmin
+    state=present
+  notify:
+    - restart-apache2
+  tags:
+    - phpmyadmin
+
+- name: 公開領域のlinkを$HOMEに
+  file:
+    state=link
+    src=/etc/phpmyadmin/apache.conf
+    path=/etc/apache2/conf-available/phpmyadmin.conf
+  tags:
+    - phpmyadmin
+
+- name: VirtualHost有効化
+  command:
+    a2enconf phpmyadmin
+  register:
+    result
+  changed_when:
+    "'already enabled' not in result.stdout"
+  notify:
+    - restart-apache2
+  tags:
+    - phpmyadmin
+
+#- name: ホストからアクセスできるよう強制修正
+#  replace:
+#    regexp='^     Allow from 127.0.0.1'
+#    replace='     Allow from All'
+#    dest=/etc/httpd/conf.d/phpMyAdmin.conf
+#    backup=yes
+#  notify:
+#    - restart-apache2
+#  tags:
+#    - phpmyadmin

@@ -1,0 +1,44 @@
+---
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - php5
+    - php5-cli
+    - php5-common
+    - php5-gd
+    - php5-mcrypt
+    - php5-mysqlnd
+    - php5-xdebug
+    - php5-xhprof
+    - php5-sqlite
+  tags:
+    - php
+
+- name: モジュール有効化
+  command:
+    php5enmod {{ item }}
+  with_items:
+    - mcrypt
+  register:
+    result
+  changed_when:
+    "'already enabled' not in result.stdout"
+  notify:
+    - restart-apache2
+  tags:
+    - php
+
+- name: phpinfo.php配置
+  copy:
+    src=phpinfo.php
+    dest=/var/www/html/phpinfo.php
+    owner={{ user }}
+    group={{ user }}
+    mode=0644
+  tags:
+    - php
+
+- include: composer.yml
+#- include: phing.yml

@@ -1,0 +1,33 @@
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        ServerName {{ item.value.domain }}
+        ServerAdmin webmaster@{{ item.value.domain }}
+        DocumentRoot {{ item.value.docroot }}
+        ErrorLog ${APACHE_LOG_DIR}/{{ item.value.domain }}-error_log
+        CustomLog ${APACHE_LOG_DIR}/{{ item.value.domain }}-access_log combined
+        LogLevel warn ssl:warn
+
+        SSLEngine on
+        SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+        SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+        #SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire
+
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+        </FilesMatch>
+        <Directory /usr/lib/cgi-bin>
+            SSLOptions +StdEnvVars
+        </Directory>
+        <Directory {{ item.value.docroot }}>
+            Options Indexes FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+        # SSL Protocol Adjustments:
+        BrowserMatch "MSIE [2-6]" \
+                    nokeepalive ssl-unclean-shutdown \
+                    downgrade-1.0 force-response-1.0
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+    </VirtualHost>
+</IfModule>

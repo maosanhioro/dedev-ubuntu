@@ -1,0 +1,31 @@
+---
+#- name: Salt生成
+#  shell: mktemp -d -u | awk '{ print substr($0, length($0) - 8 + 1)}'
+#  register: salt
+#
+#- name: Hashedパスワード生成
+#  command: python -c "import crypt; print crypt.crypt(\"{{ user }}\", \"$1${{ salt.stdout }}$\")"
+#  register: password
+#
+#- name: ユーザ登録
+#  user:
+#    name={{ user }}
+#    password={{ password.stdout }}
+#    groups=sudo
+#    append=yes
+#    shell=/bin/bash
+#
+#- name: sudoユーザとして登録
+#  lineinfile: "dest=/etc/sudoers backup=yes state=present regexp='^{{ user }}' line='{{ user }} ALL=(ALL) NOPASSWD: ALL'"
+
+- name: $HOME以下を初期化
+  file:
+    state=directory
+    path={{ item.path }}
+    mode={{ item.mode }}
+    owner={{ user }}
+    group={{ user }}
+  with_items:
+    - { path: '/home/{{ user }}/', mode: '711' }
+    - { path: '/home/{{ user }}/bin', mode: '755' }
+    - { path: '/home/{{ user }}/src', mode: '755' }

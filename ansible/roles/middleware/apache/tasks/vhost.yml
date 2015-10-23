@@ -1,0 +1,42 @@
+---
+- name: virtualhost | 設定ファイルを配置
+  template:
+    src=virtualhost.conf.j2
+    dest=/etc/apache2/sites-available/vhost-{{ item.key }}.conf
+    mode=0644
+  with_dict:
+    "{{ vhosts }}"
+  notify:
+    - restart-apache2
+  tags:
+    - apache
+    - vhost
+
+- name: virtualhost | documentrootのディレクトリ用意
+  file:
+    state=directory
+    path={{ item.value.basedir }}
+    mode=755
+    owner={{ user }}
+    group={{ user }}
+  with_dict:
+    "{{ vhosts }}"
+  ignore_errors: True
+  tags:
+    - apache
+    - vhost
+
+- name: virtualhost | 有効化
+  command:
+    a2ensite vhost-{{ item.key }}
+  with_dict:
+    "{{ vhosts }}"
+  register:
+    result
+  changed_when:
+    "'already enabled' not in result.stdout"
+  notify:
+    - restart-apache2
+  tags:
+    - apache
+    - vhost

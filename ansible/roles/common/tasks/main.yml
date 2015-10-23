@@ -1,0 +1,36 @@
+---
+- name: 全パッケージをupdate
+  apt:
+    upgrade=dist
+    update_cache=yes
+
+- name: IPv6無効に設定
+  sysctl:
+    name={{ item.name }}
+    value={{ item.value }}
+    state=present
+    reload=yes
+    ignoreerrors=yes
+  with_items:
+    - { name: 'net.ipv6.conf.all.disable_ipv6', value: 1 }
+    - { name: 'net.ipv6.conf.default.disable_ipv6', value: 1 }
+
+- name: /etc/hostsからIPv6宣言をコメントアウト
+  replace:
+    regexp="{{ item.regexp }}"
+    replace="{{ item.replace }}"
+    dest=/etc/hosts
+    backup=no
+  with_items:
+    - { regexp: '^::1     localhost ip6-localhost ip6-loopback', replace: '#::1     localhost ip6-localhost ip6-loopback' }
+    - { regexp: '^ff02::1 ip6-allnodes', replace: '#ff02::1 ip6-allnodes' }
+    - { regexp: '^ff02::2 ip6-allrouters', replace: '#ff02::2 ip6-allrouters' }
+
+- name: 最低限パッケージをインストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - build-essential
+    - git
+    - unzip

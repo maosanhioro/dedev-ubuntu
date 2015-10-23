@@ -1,0 +1,30 @@
+---
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - mysql-server
+    - libapache2-mod-auth-mysql
+    - php5-mysql
+  tags:
+    - mysql
+
+#- name: rootユーザのパスワード設定
+#  mysql_user:
+#    name=root
+#    password=root
+#    priv=*.*:ALL
+#    state=present
+#  tags:
+#    - mysql
+
+- name: サービス登録・起動
+  service:
+    name=mysql
+    state=started
+    enabled=true
+  notify:
+    - restart-mysql
+  tags:
+    - mysql

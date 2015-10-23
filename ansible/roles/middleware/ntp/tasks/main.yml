@@ -1,0 +1,20 @@
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - ntp
+
+- name: 設定ファイルを配置
+  copy:
+    src=ntp.conf
+    dest=/etc/ntp.conf
+    mode=644
+
+- name: サービス登録・起動
+  service:
+    name=ntp
+    state=started
+    enabled=yes
+  notify:
+    - restart-ntp
