@@ -75,7 +75,7 @@ DEFAULT_SYNCED_GUEST    = '/vagrant'
 ## 2. 起動
 
 ```bash
-$ vagrant up ubuntu
+$ vagrant up
 $ vagrant ssh-config >> $HOME/.ssh/config
 ```
 
