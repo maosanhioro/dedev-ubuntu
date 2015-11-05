@@ -1,6 +1,6 @@
 ---
 - name: PPA (Personal Package Archive) 取得
-  shell: curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
+  shell: curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
   tags:
     - nodejs
 
