@@ -15,6 +15,8 @@ Vagrant.configure(2) do |config|
     # default.vm.network "private_network", ip: "#{ENV['DEFAULT_PRIVATE_IP']}", virtualbox__intnet: "#{ENV['DEFAULT_PRIVATE_INTNET']}"
     # default.vm.network :public_network, bridge: "#{ENV['DEFAULT_PUBLIC_BRIDGE']}", ip: "#{ENV['DEFAULT_PUBLIC_IP']}", netmask: "#{ENV['DEFAULT_PUBLIC_NETMASK']}"
     # default.vm.network "forwarded_port", guest: 80, host: 8080
+    default.vm.network "forwarded_port", guest: 25, host: 25
+    default.vm.network "forwarded_port", guest: 143, host: 143
     default.vm.synced_folder "#{ENV['DEFAULT_SYNCED_HOST']}", "#{ENV['DEFAULT_SYNCED_GUEST']}",
         owner: "#{ENV['DEFAULT_SYNCED_OWNER']}",
         group: "#{ENV['DEFAULT_SYNCED_GROUP']}",

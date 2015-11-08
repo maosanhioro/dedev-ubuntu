@@ -140,6 +140,41 @@ $ sudo vi /private/etc/hosts
 * http://dedev.vm/phpmyadmin
     * root@MySQLのパスワード設定を先に行うこと
 
+---
+
+## WebMail
+* Postfix/Dovecotで簡易メールサーバを構築
+* RoundcubeでWebメーラー構築
+* SMTPがlocalhost:25を指す場合は外部へ送信しない、Webメーラー（Roundcube）で受信確認
+
+### Usage
+```bash
+# バーチャルホスト定義に追加
+$ vi dedev.yml
+---
+vhosts:
+  dedev:
+    domain: dedev.vm
+    basedir: /var/www/html
+    docroot: /var/www/html
+  roundcube:
+    domain: roundcube.dedev.vm
+    basedir: /var/lib/roundcube
+    docroot: /var/lib/roundcube
+
+# Ansible実行
+$ ansible-playbook webmail.yml
+
+# /etc/hostsに追記
+$ sudo vi /private/etc/hosts
+192.168.33.11 dedev.vm roundcube.dedev.vm
+```
+
+### Access & URL
+* http://roundcube.dedev.vm/
+    * Username: vagrant
+    * Password: vagrant
+    * Server:   localhost
 
 ---
 
