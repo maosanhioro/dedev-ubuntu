@@ -1,0 +1,6 @@
+---
+dependencies:
+  - { role: middleware/mysql }
+  - { role: middleware/php }
+  - { role: middleware/postfix }
+  - { role: middleware/dovecot }

@@ -1,0 +1,60 @@
+---
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - mailutils
+    - postfix-mysql
+    - postfix-pcre
+  tags:
+    - postfix
+
+- name: ユーザにサブグループを追加
+  user:
+    name={{ user }}
+    groups=mail
+    append=yes
+  tags:
+    - postfix
+
+- name: aliases.regexp配置
+  copy:
+    src=aliases.regexp
+    dest=/etc/aliases.regexp
+    mode=644
+  tags:
+    - postfix
+
+- name: alias_mapsを修正
+  lineinfile:
+    dest=/etc/postfix/main.cf
+    regexp='alias_maps = hash:/etc/aliases'
+    line='alias_maps = hash:/etc/aliases, pcre:/etc/aliases.regexp'
+  tags:
+    - postfix
+
+- name: transport_maps配置
+  copy:
+    src=transport_maps
+    dest=/etc/postfix/transport_maps
+    mode=644
+  tags:
+    - postfix
+
+- name: transport_mapsを設定に追記
+  lineinfile:
+    dest=/etc/postfix/main.cf
+    line='transport_maps = pcre:/etc/postfix/transport_maps'
+  tags:
+    - postfix
+
+- name: サービス登録・起動
+  service:
+    name=postfix
+    state=started
+    enabled=yes
+  notify:
+    - restart-postfix
+  tags:
+    - postfix

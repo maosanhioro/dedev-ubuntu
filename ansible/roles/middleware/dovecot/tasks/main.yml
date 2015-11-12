@@ -1,0 +1,32 @@
+---
+- name: インストール
+  apt:
+    name={{ item }}
+    state=present
+  with_items:
+    - dovecot-core
+    - dovecot-imapd
+  tags:
+    - dovecot
+
+- name: 10-auth.conf修正
+  lineinfile: >-
+    dest=/etc/dovecot/conf.d/10-auth.conf
+    state=present
+    backrefs=yes
+    regexp='#disable_plaintext_auth = yes'
+    line='disable_plaintext_auth = no'
+  notify:
+    - restart-dovecot
+  tags:
+    - dovecot
+
+- name: サービス登録・起動
+  service:
+    name=dovecot
+    state=started
+    enabled=yes
+  notify:
+    - restart-dovecot
+  tags:
+    - dovecot
